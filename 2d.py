@@ -1,9 +1,8 @@
 # Displays a white window with a blue circle in the middle
 import arcade
-SCREEN_WIDTH = 500
-SCREEN_HEIGHT = 500
+SCREEN_WIDTH = 700
+SCREEN_HEIGHT = 700
 SCREEN_TITLE = "Welcome to Arcade Snails"
-RADIUS = 150
 background = None
 arcade.open_window(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
 # arcade.set_background_color(arcade.color.ALIZARIN_CRIMSON)
@@ -16,10 +15,15 @@ arcade.draw_lrwh_rectangle_textured(0, 0,SCREEN_WIDTH, SCREEN_HEIGHT,background)
 
 # Started making grid  
 
-for y in range (0,500,100):
 
-    arcade.draw_line(0,y,500,y,arcade.color.WHITE,5)
-    arcade.draw_line(y,0,y,500,arcade.color.GRAY,5)
+
+for y in range (100,700,100):
+    # for horizontal line 
+   
+    arcade.draw_line(100,y,600,y,arcade.color.WHITE,5)
+    # for verticle line
+    arcade.draw_line(y,100,y,600,arcade.color.GRAY,5)
+
 
 arcade.finish_render()
 
