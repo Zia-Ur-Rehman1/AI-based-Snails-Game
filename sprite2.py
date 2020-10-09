@@ -1,14 +1,14 @@
 """
-Move Sprite With Keyboard
+Better Move Sprite With Keyboard
 
 Simple program to show moving a sprite with the keyboard.
-The sprite_move_keyboard_better.py example is slightly better
+This is slightly better than sprite_move_keyboard.py example
 in how it works, but also slightly more complex.
 
 Artwork from http://kenney.nl
 
 If Python and Arcade are installed, this example can be run from the command line with:
-python -m arcade.examples.sprite_move_keyboard
+python -m arcade.examples.sprite_move_keyboard_better
 """
 
 import arcade
@@ -18,11 +18,10 @@ SPRITE_SCALING = 0.95
 
 SCREEN_WIDTH = 700
 SCREEN_HEIGHT = 700
-SCREEN_TITLE = "2D Game By Khan Alone"
+SCREEN_TITLE = "KHAN ALONE"
 
 MOVEMENT_SPEED = 100
-# background = None
-# arcade.open_window(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
+
 
 class Player(arcade.Sprite):
 
@@ -66,6 +65,7 @@ class MyGame(arcade.Window):
 
         # Set up the player info
         self.player_sprite = None
+
         # Track the current state of what key is pressed
         self.left_pressed = False
         self.right_pressed = False
@@ -73,7 +73,6 @@ class MyGame(arcade.Window):
         self.down_pressed = False
 
         # Set the background color
-      
         arcade.set_background_color(arcade.color.AMAZON)
 
     def setup(self):
@@ -81,6 +80,7 @@ class MyGame(arcade.Window):
 
         # Sprite lists
         self.player_list = arcade.SpriteList()
+
 
         # Set up the player
         self.player_sprite = Player(":resources:images/animated_characters/female_person/femalePerson_idle.png", SPRITE_SCALING)
@@ -100,6 +100,8 @@ class MyGame(arcade.Window):
 
         # This command has to happen before we start drawing
         arcade.start_render()
+
+
         background = arcade.load_texture("wow.jpg")
         arcade.draw_lrwh_rectangle_textured(0, 0,SCREEN_WIDTH, SCREEN_HEIGHT,background)
         for y in range (100,700,100):
@@ -109,11 +111,14 @@ class MyGame(arcade.Window):
     # for verticle line
             arcade.draw_line(y,100,y,600,arcade.color.GRAY,5)
         # Draw all the sprites.
+
+        # Draw all the sprites.
         self.player_list.draw()
 
     def on_update(self, delta_time):
         """ Movement and game logic """
-         # Calculate speed based on the keys pressed
+
+        # Calculate speed based on the keys pressed
         self.player_sprite.change_x = 0
         self.player_sprite.change_y = 0
 
@@ -129,13 +134,11 @@ class MyGame(arcade.Window):
         # Call update to move the sprite
         # If using a physics engine, call update on it instead of the sprite
         # list.
-
-       
         self.player_list.update()
 
     def on_key_press(self, key, modifiers):
         """Called whenever a key is pressed. """
-
+        
         if key == arcade.key.UP:
             self.up_pressed = True
         elif key == arcade.key.DOWN:
