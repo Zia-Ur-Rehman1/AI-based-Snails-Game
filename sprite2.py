@@ -13,19 +13,18 @@ python -m arcade.examples.sprite_move_keyboard_better
 
 import arcade
 import os
-
 SPRITE_SCALING = 0.95
 
 SCREEN_WIDTH = 700
 SCREEN_HEIGHT = 700
-SCREEN_TITLE = "KHAN ALONE"
+SCREEN_TITLE = "Khan Alone"
 
 MOVEMENT_SPEED = 100
 
 
 class Player(arcade.Sprite):
-
     def update(self):
+     
         self.center_x += self.change_x
         self.center_y += self.change_y
 
@@ -44,15 +43,15 @@ class MyGame(arcade.Window):
     """
     Main application class.
     """
-
     def __init__(self, width, height, title):
         """
         Initializer
         """
+        
 
         # Call the parent class initializer
         super().__init__(width, height, title)
-
+        
         # Set the working directory (where we expect to find files) to the same
         # directory this .py file is in. You can leave this out of your own
         # code, but it is needed to easily run the examples using "python -m"
@@ -65,7 +64,7 @@ class MyGame(arcade.Window):
 
         # Set up the player info
         self.player_sprite = None
-
+        
         # Track the current state of what key is pressed
         self.left_pressed = False
         self.right_pressed = False
@@ -80,8 +79,8 @@ class MyGame(arcade.Window):
 
         # Sprite lists
         self.player_list = arcade.SpriteList()
-
-
+        self.turn=0
+        
         # Set up the player
         self.player_sprite = Player(":resources:images/animated_characters/female_person/femalePerson_idle.png", SPRITE_SCALING)
         self.player_sprite1 = Player(":resources:images/animated_characters/female_person/femalePerson_idle.png", SPRITE_SCALING)
@@ -114,52 +113,68 @@ class MyGame(arcade.Window):
 
         # Draw all the sprites.
         self.player_list.draw()
-
     def on_update(self, delta_time):
         """ Movement and game logic """
-
+        print(self.turn)
+        if(self.turn==0):
+            self.turn=self.turn+1
         # Calculate speed based on the keys pressed
-        self.player_sprite.change_x = 0
-        self.player_sprite.change_y = 0
+            self.player_sprite.change_x = 0
+            self.player_sprite.change_y = 0
 
-        if self.up_pressed and not self.down_pressed:
-            self.player_sprite.change_y = MOVEMENT_SPEED
-        elif self.down_pressed and not self.up_pressed:
-            self.player_sprite.change_y = -MOVEMENT_SPEED
-        if self.left_pressed and not self.right_pressed:
-            self.player_sprite.change_x = -MOVEMENT_SPEED
-        elif self.right_pressed and not self.left_pressed:
-            self.player_sprite.change_x = MOVEMENT_SPEED
+            if self.up_pressed and not self.down_pressed:
+                self.player_sprite.change_y = MOVEMENT_SPEED
+            elif self.down_pressed and not self.up_pressed:
+                self.player_sprite.change_y = -MOVEMENT_SPEED
+            if self.left_pressed and not self.right_pressed:
+                self.player_sprite.change_x = -MOVEMENT_SPEED
+            elif self.right_pressed and not self.left_pressed:
+                self.player_sprite.change_x = MOVEMENT_SPEED
+            self.player_list.update()
+
+        else:
+            self.turn=self.turn-1
+        # Calculate speed based on the keys pressed
+            self.player_sprite1.change_x = 0
+            self.player_sprite1.change_y = 0
+
+            if self.up_pressed and not self.down_pressed:
+                self.player_sprite1.change_y = MOVEMENT_SPEED
+            elif self.down_pressed and not self.up_pressed:
+                self.player_sprite1.change_y = -MOVEMENT_SPEED
+            if self.left_pressed and not self.right_pressed:
+                self.player_sprite1.change_x = -MOVEMENT_SPEED
+            elif self.right_pressed and not self.left_pressed:
+                self.player_sprite1.change_x = MOVEMENT_SPEED
+            self.player_list.update()
 
         # Call update to move the sprite
         # If using a physics engine, call update on it instead of the sprite
         # list.
-        self.player_list.update()
-
+            
     def on_key_press(self, key, modifiers):
         """Called whenever a key is pressed. """
-        
-        if key == arcade.key.UP:
-            self.up_pressed = True
-        elif key == arcade.key.DOWN:
-            self.down_pressed = True
-        elif key == arcade.key.LEFT:
-            self.left_pressed = True
-        elif key == arcade.key.RIGHT:
-            self.right_pressed = True
+
+        if key == arcade.key.UP or key == arcade.key.W:
+            self.player_sprite.change_y = MOVEMENT_SPEED
+        elif key == arcade.key.DOWN or key == arcade.key.S:
+            self.player_sprite.change_y = -MOVEMENT_SPEED
+        elif key == arcade.key.LEFT or key == arcade.key.A:
+            self.player_sprite.change_x = -MOVEMENT_SPEED
+        elif key == arcade.key.RIGHT or key == arcade.key.D:
+            self.player_sprite.change_x = MOVEMENT_SPEED
 
     def on_key_release(self, key, modifiers):
         """Called when the user releases a key. """
 
-        if key == arcade.key.UP:
-            self.up_pressed = False
-        elif key == arcade.key.DOWN:
-            self.down_pressed = False
-        elif key == arcade.key.LEFT:
-            self.left_pressed = False
-        elif key == arcade.key.RIGHT:
-            self.right_pressed = False
-
+        if key == arcade.key.UP or key == arcade.key.W:
+            self.player_sprite.change_y = 0
+        elif key == arcade.key.DOWN or key == arcade.key.S:
+            self.player_sprite.change_y = 0
+        elif key == arcade.key.LEFT or key == arcade.key.A:
+            self.player_sprite.change_x = 0
+        elif key == arcade.key.RIGHT or key == arcade.key.D:
+            self.player_sprite.change_x = 0
 
 def main():
     """ Main method """
