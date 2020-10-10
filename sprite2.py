@@ -113,41 +113,7 @@ class MyGame(arcade.Window):
 
         # Draw all the sprites.
         self.player_list.draw()
-    def on_update(self, delta_time):
-        """ Movement and game logic """
-        print(self.turn)
-        if(self.turn==0):
-            self.turn=self.turn+1
-        # Calculate speed based on the keys pressed
-            self.player_sprite.change_x = 0
-            self.player_sprite.change_y = 0
-
-            if self.up_pressed and not self.down_pressed:
-                self.player_sprite.change_y = MOVEMENT_SPEED
-            elif self.down_pressed and not self.up_pressed:
-                self.player_sprite.change_y = -MOVEMENT_SPEED
-            if self.left_pressed and not self.right_pressed:
-                self.player_sprite.change_x = -MOVEMENT_SPEED
-            elif self.right_pressed and not self.left_pressed:
-                self.player_sprite.change_x = MOVEMENT_SPEED
-            self.player_list.update()
-
-        else:
-            self.turn=self.turn-1
-        # Calculate speed based on the keys pressed
-            self.player_sprite1.change_x = 0
-            self.player_sprite1.change_y = 0
-
-            if self.up_pressed and not self.down_pressed:
-                self.player_sprite1.change_y = MOVEMENT_SPEED
-            elif self.down_pressed and not self.up_pressed:
-                self.player_sprite1.change_y = -MOVEMENT_SPEED
-            if self.left_pressed and not self.right_pressed:
-                self.player_sprite1.change_x = -MOVEMENT_SPEED
-            elif self.right_pressed and not self.left_pressed:
-                self.player_sprite1.change_x = MOVEMENT_SPEED
-            self.player_list.update()
-
+    # 
         # Call update to move the sprite
         # If using a physics engine, call update on it instead of the sprite
         # list.
@@ -163,6 +129,7 @@ class MyGame(arcade.Window):
             self.player_sprite.change_x = -MOVEMENT_SPEED
         elif key == arcade.key.RIGHT or key == arcade.key.D:
             self.player_sprite.change_x = MOVEMENT_SPEED
+        self.player_list.update()
 
     def on_key_release(self, key, modifiers):
         """Called when the user releases a key. """
