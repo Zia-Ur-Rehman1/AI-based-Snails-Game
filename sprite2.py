@@ -103,12 +103,13 @@ class MyGame(arcade.Window):
 
         background = arcade.load_texture("wow.jpg")
         arcade.draw_lrwh_rectangle_textured(0, 0,SCREEN_WIDTH, SCREEN_HEIGHT,background)
-        for y in range (100,700,100):
+        x=-50
+        for y in range (100,700,100-x):
     # for horizontal line 
    
-            arcade.draw_line(100,y,600,y,arcade.color.WHITE,5)
+            arcade.draw_line(100,y,600+x,y,arcade.color.WHITE,5)
     # for verticle line
-            arcade.draw_line(y,100,y,600,arcade.color.GRAY,5)
+            arcade.draw_line(y,100,y,600+x,arcade.color.GRAY,5)
         # Draw all the sprites.
 
         # Draw all the sprites.
