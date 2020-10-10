@@ -65,11 +65,7 @@ class MyGame(arcade.Window):
         # Set up the player info
         self.player_sprite = None
         
-        # Track the current state of what key is pressed
-        self.left_pressed = False
-        self.right_pressed = False
-        self.up_pressed = False
-        self.down_pressed = False
+      
 
         # Set the background color
         arcade.set_background_color(arcade.color.AMAZON)
@@ -103,13 +99,21 @@ class MyGame(arcade.Window):
 
         background = arcade.load_texture("wow.jpg")
         arcade.draw_lrwh_rectangle_textured(0, 0,SCREEN_WIDTH, SCREEN_HEIGHT,background)
-        x=-50
-        for y in range (100,700,100-x):
+        """
+        if x=-50 and k=50 3 by 3 matrix
+        if X=0 and k=0 5 by 5 matrix
+        if X=50 and k =0 10 by 10 matrix
+        if X=75 and k=0 20 by 20 matrix
+            
+            """
+        x=0
+        k=0
+        for y in range (100,700-x,100-x):
     # for horizontal line 
    
-            arcade.draw_line(100,y,600+x,y,arcade.color.WHITE,5)
+            arcade.draw_line(100,y,600-k,y,arcade.color.WHITE,5)
     # for verticle line
-            arcade.draw_line(y,100,y,600+x,arcade.color.GRAY,5)
+            arcade.draw_line(y,100,y,600-k,arcade.color.GRAY,5)
         # Draw all the sprites.
 
         # Draw all the sprites.
