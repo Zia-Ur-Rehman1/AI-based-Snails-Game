@@ -15,8 +15,8 @@ import arcade
 import os
 SPRITE_SCALING = 0.95
 
-SCREEN_WIDTH = 700
-SCREEN_HEIGHT = 700
+SCREEN_WIDTH = 600
+SCREEN_HEIGHT = 600
 SCREEN_TITLE = "Khan Alone"
 
 MOVEMENT_SPEED = 100
@@ -24,19 +24,20 @@ MOVEMENT_SPEED = 100
 
 class Player(arcade.Sprite):
     def update(self):
-     
+        
+ 
         self.center_x += self.change_x
         self.center_y += self.change_y
 
-        if self.left < 100:
-            self.left = 100
-        elif self.right > SCREEN_WIDTH - 100:
-            self.right = SCREEN_WIDTH - 100
+        if self.left < 0:
+            self.left = 0
+        elif self.right > SCREEN_WIDTH - 0:
+            self.right = SCREEN_WIDTH - 0
 
-        if self.bottom < 100:
-            self.bottom = 100
-        elif self.top > SCREEN_HEIGHT - 100:
-            self.top = SCREEN_HEIGHT - 100
+        if self.bottom < 0:
+            self.bottom = 0
+        elif self.top > SCREEN_HEIGHT - 0:
+            self.top = SCREEN_HEIGHT - 0
 
 
 class MyGame(arcade.Window):
@@ -65,7 +66,7 @@ class MyGame(arcade.Window):
         # Set up the player info
         self.player_sprite = None
         
-      
+        self.score=0
 
         # Set the background color
         arcade.set_background_color(arcade.color.AMAZON)
@@ -76,7 +77,7 @@ class MyGame(arcade.Window):
         # Sprite lists
         self.player_list = arcade.SpriteList()
         self.turn=0
-        
+       
         # Set up the player
         self.player_sprite = Player(":resources:images/animated_characters/female_person/femalePerson_idle.png", SPRITE_SCALING)
         self.player_sprite1 = Player(":resources:images/animated_characters/female_person/femalePerson_idle.png", SPRITE_SCALING)
@@ -87,7 +88,7 @@ class MyGame(arcade.Window):
         self.player_sprite1.center_y = 565
         self.player_list.append(self.player_sprite)
         self.player_list.append(self.player_sprite1)
-
+        
     def on_draw(self):
         """
         Render the screen.
@@ -98,7 +99,8 @@ class MyGame(arcade.Window):
 
 
         background = arcade.load_texture("wow.jpg")
-        arcade.draw_lrwh_rectangle_textured(0, 0,SCREEN_WIDTH, SCREEN_HEIGHT,background)
+        output = f"Score: {self.score}"
+        arcade.draw_text(output, 10, 20, arcade.color.WHITE, 14)
         """
         if x=-50 and k=50 3 by 3 matrix
         if X=0 and k=0 5 by 5 matrix
@@ -106,14 +108,13 @@ class MyGame(arcade.Window):
         if X=75 and k=0 20 by 20 matrix
             
             """
-        x=0
-        k=0
-        for y in range (100,700-x,100-x):
+      
+        for y in range (0,800,100):
     # for horizontal line 
    
-            arcade.draw_line(100,y,600-k,y,arcade.color.WHITE,5)
+            arcade.draw_line(0,y,800,y,arcade.color.WHITE,5)
     # for verticle line
-            arcade.draw_line(y,100,y,600-k,arcade.color.GRAY,5)
+            arcade.draw_line(y,0,y,800,arcade.color.WHITE,5)
         # Draw all the sprites.
 
         # Draw all the sprites.
@@ -122,7 +123,8 @@ class MyGame(arcade.Window):
         # Call update to move the sprite
         # If using a physics engine, call update on it instead of the sprite
         # list.
-            
+    def on_update(self, delta_time):
+        pass
     def on_key_press(self, key, modifiers):
         """Called whenever a key is pressed. """
 

@@ -9,8 +9,8 @@ SCREEN_TITLE = "Khan Alone"
 arcade.open_window(SCREEN_WIDTH,SCREEN_HEIGHT,SCREEN_TITLE)
 arcade.start_render()
 
-background = arcade.load_texture("abstract_1.jpg")
-arcade.draw_lrwh_rectangle_textured(0, 0,SCREEN_WIDTH, SCREEN_HEIGHT,background)
+background = arcade.load_texture("wow.jpg")
+arcade.draw_lrwh_rectangle_textured(0, 0,SCREEN_WIDTH, SCREEN_HEIGHT,background,alpha=240)
 """ Placing Tick Cross Images"""
 s1=arcade.load_texture("sn.png")
 s1_s=arcade.load_texture("black.png")
