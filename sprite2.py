@@ -98,7 +98,7 @@ class MyGame(arcade.Window):
         arcade.start_render()
 
 
-        background = arcade.load_texture("wow.jpg")
+        background = arcade.load_texture("start.jpg")
         output = f"Score: {self.score}"
         arcade.draw_text(output, 10, 20, arcade.color.WHITE, 14)
         """

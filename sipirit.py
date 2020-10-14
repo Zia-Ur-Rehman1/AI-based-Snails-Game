@@ -7,13 +7,13 @@ file_path = os.path.dirname(os.path.abspath(__file__))
 os.chdir(file_path)
 
 
-SPRITE_SCALING = 0.95
+SPRITE_SCALING = 0.10
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 800
 SCREEN_TITLE = "Khan Alone"
 
-MOVEMENT_SPEED = 100
+MOVEMENT_SPEED = 60
 
 
 class Player(arcade.Sprite):
@@ -23,15 +23,15 @@ class Player(arcade.Sprite):
         self.center_x += self.change_x
         self.center_y += self.change_y
 
-        if self.left < 0:
-            self.left = 0
-        elif self.right > SCREEN_WIDTH - 0:
-            self.right = SCREEN_WIDTH - 0
+        if self.left < 100:
+            self.left = 100
+        elif self.right > SCREEN_WIDTH - 100:
+            self.right = SCREEN_WIDTH - 100
 
-        if self.bottom < 0:
-            self.bottom = 0
-        elif self.top > SCREEN_HEIGHT - 0:
-            self.top = SCREEN_HEIGHT - 0
+        if self.bottom < 100:
+            self.bottom = 100
+        elif self.top > SCREEN_HEIGHT - 100:
+            self.top = SCREEN_HEIGHT - 100
 
 class MenuView(arcade.View):
     def on_show(self):
@@ -40,11 +40,13 @@ class MenuView(arcade.View):
     def on_draw(self):
         arcade.start_render()
         background = arcade.load_texture("menu4.jpg")
+        
         arcade.draw_lrwh_rectangle_textured(0, 0,SCREEN_WIDTH, SCREEN_HEIGHT,background)
         arcade.draw_text("Khan Alone", SCREEN_WIDTH/2, SCREEN_HEIGHT-270,
-                         arcade.color.BLUEBERRY, font_size=50, anchor_x="center")
+                         arcade.color.BLUEBERRY, font_size=90, anchor_x="center")
         arcade.draw_text("Click to Enter The Game", SCREEN_WIDTH/2, SCREEN_HEIGHT-320,
-                         arcade.color.RED, font_size=20, anchor_x="center")
+                         arcade.color.RED, font_size=40, anchor_x="center")
+
     def on_mouse_press(self, _x, _y, _button, _modifiers):
         instructions_view = InstructionView()
         self.window.show_view(instructions_view)
@@ -60,15 +62,18 @@ class InstructionView(arcade.View):
     def on_draw(self):
         arcade.start_render()
         background = arcade.load_texture("start.jpg")
+        
         arcade.draw_lrwh_rectangle_textured(0, 0,SCREEN_WIDTH, SCREEN_HEIGHT,background)
-        arcade.draw_text("Snails", SCREEN_WIDTH/2, SCREEN_HEIGHT-50,
-                         arcade.color.RED_DEVIL, font_size=30, bold=True,anchor_x="center")
+        arcade.draw_text("S N A I L S", SCREEN_WIDTH/2, SCREEN_HEIGHT-180,
+                         arcade.color.SKY_BLUE, font_size=50, bold=True,anchor_x="center")
         
-        arcade.draw_text("Select The Dificulty", SCREEN_WIDTH/2, SCREEN_HEIGHT-100,
-                         arcade.color.GRAY, font_size=30, bold=True,anchor_x="center")
-        
-        arcade.draw_text("Click To Advance", SCREEN_WIDTH/2, SCREEN_HEIGHT/2-75,
-                         arcade.color.GRAY, font_size=20, anchor_x="center")
+       
+        arcade.draw_text("Click To Begin The Challenge", SCREEN_WIDTH/2, SCREEN_HEIGHT-400,
+                         arcade.color.GRAY_ASPARAGUS, font_size=25,bold=True,font_name='calibri', anchor_x="center")
+        snail = arcade.load_texture("1.png",)
+        arcade.draw_lrwh_rectangle_textured(50, 600,100,100,snail)
+        snail = arcade.load_texture("2.png",flipped_horizontally=True)
+        arcade.draw_lrwh_rectangle_textured(SCREEN_WIDTH-150, 600,100,100,snail)
 
     def on_mouse_press(self, _x, _y, _button, _modifiers):
         game_view = GameView()
@@ -90,10 +95,15 @@ class GameView(arcade.View):
         
         self.player_sprite = None
         # Set up the player
-        self.player_sprite = arcade.Sprite(":resources:images/animated_characters/female_person/femalePerson_idle.png", SPRITE_SCALING)
-        self.player_sprite.center_x = 50
-        self.player_sprite.center_y = 50
+        self.player_sprite = Player("1.png", SPRITE_SCALING)
+        self.player_sprite2 = Player("2.png", SPRITE_SCALING,flipped_horizontally=True)
+        self.player_sprite.center_x = 130
+        self.player_sprite.center_y = 120
+        self.player_sprite2.center_x =  SCREEN_WIDTH- 130
+        self.player_sprite2.center_y = SCREEN_HEIGHT- 134
+
         self.player_list.append(self.player_sprite)
+        self.player_list.append(self.player_sprite2)
         
         
     # def on_show(self):
@@ -105,6 +115,8 @@ class GameView(arcade.View):
     def on_draw(self):
         arcade.start_render()
         # Draw all the sprites.
+        background = arcade.load_texture("menu4.jpg")
+        arcade.draw_lrwh_rectangle_textured(0, 0,SCREEN_WIDTH, SCREEN_HEIGHT,background)
         self.player_list.draw()
        
         # Put the text on the screen.
@@ -112,13 +124,17 @@ class GameView(arcade.View):
         arcade.draw_text(output, 10, 30, arcade.color.WHITE, 14)
         output_total = f"Total Score: {self.window.total_score}"
         arcade.draw_text(output_total, 10, 10, arcade.color.WHITE, 14)
+        turn=f"Turn Of Player 1"
+        arcade.draw_text(turn, 350, 750, arcade.color.WHITE,20,italic=True)
+
         """ Making Grid"""
         box=int(600/10)
+        
 # Started making grid  
         for y in range (100,701,box):
     # for horizontal line 
    
-            arcade.draw_line(100,y,700,y,arcade.color.WHITE,5)
+            arcade.draw_line(100,y,700,y,arcade.color.GRAY_BLUE,5)
     # for verticle line
             arcade.draw_line(y,100,y,700,arcade.color.GRAY,5)
 
@@ -156,6 +172,7 @@ class GameView(arcade.View):
         """
         Movement With Keyboard
         """
+
         
     def on_key_press(self, key, modifiers):
         """Called whenever a key is pressed. """
@@ -184,14 +201,7 @@ class GameView(arcade.View):
         """
        End of Movement With Keyboard
         """
-    # def on_mouse_motion(self, x, y, _dx, _dy):
-    #     """
-    #     Called whenever the mouse moves.
-    #     """
-    #     self.player_sprite.center_x = x
-    #     self.player_sprite.center_y = y
-
-
+   
 
 
 def main():
