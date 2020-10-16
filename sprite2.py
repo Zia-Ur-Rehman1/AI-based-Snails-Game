@@ -25,7 +25,6 @@ MOVEMENT_SPEED = 100
 class Player(arcade.Sprite):
     def update(self):
         
- 
         self.center_x += self.change_x
         self.center_y += self.change_y
 
@@ -99,15 +98,9 @@ class MyGame(arcade.Window):
 
 
         background = arcade.load_texture("start.jpg")
-        output = f"Score: {self.score}"
-        arcade.draw_text(output, 10, 20, arcade.color.WHITE, 14)
-        """
-        if x=-50 and k=50 3 by 3 matrix
-        if X=0 and k=0 5 by 5 matrix
-        if X=50 and k =0 10 by 10 matrix
-        if X=75 and k=0 20 by 20 matrix
-            
-            """
+        output = f"Turn of: {self.turn}"
+        arcade.draw_text(output, 300, 550, arcade.color.WHITE, 14)
+     
       
         for y in range (0,800,100):
     # for horizontal line 
@@ -124,31 +117,40 @@ class MyGame(arcade.Window):
         # If using a physics engine, call update on it instead of the sprite
         # list.
     def on_update(self, delta_time):
-        pass
+        self.player_sprite.change_x = 0
+        self.player_sprite.change_y = 0
+        self.player_sprite1.change_x = 0
+        self.player_sprite1.change_y = 0
+    """One palyer is palyer_sprite
+       2nd player is player_sprute-1"""
+
     def on_key_press(self, key, modifiers):
         """Called whenever a key is pressed. """
+        if self.turn==0:
+            self.turn+=1
+            if key == arcade.key.UP :
+                self.player_sprite.change_y = MOVEMENT_SPEED
+            elif key == arcade.key.DOWN :
+                self.player_sprite.change_y = -MOVEMENT_SPEED
+            elif key == arcade.key.LEFT :
+                self.player_sprite.change_x = -MOVEMENT_SPEED
+            elif key == arcade.key.RIGHT :
+                self.player_sprite.change_x = MOVEMENT_SPEED
+            self.player_list[0].update()
+        elif self.turn==1:    
+            self.turn-=1
 
-        if key == arcade.key.UP or key == arcade.key.W:
-            self.player_sprite.change_y = MOVEMENT_SPEED
-        elif key == arcade.key.DOWN or key == arcade.key.S:
-            self.player_sprite.change_y = -MOVEMENT_SPEED
-        elif key == arcade.key.LEFT or key == arcade.key.A:
-            self.player_sprite.change_x = -MOVEMENT_SPEED
-        elif key == arcade.key.RIGHT or key == arcade.key.D:
-            self.player_sprite.change_x = MOVEMENT_SPEED
-        self.player_list.update()
+            if key == arcade.key.UP:
+                self.player_sprite1.change_y = MOVEMENT_SPEED
+            elif key == arcade.key.DOWN:
+                self.player_sprite1.change_y = -MOVEMENT_SPEED
+            elif key == arcade.key.LEFT:
+                self.player_sprite1.change_x = -MOVEMENT_SPEED
+            elif key == arcade.key.RIGHT:
+                self.player_sprite1.change_x = MOVEMENT_SPEED
+            self.player_list[1].update()
 
-    def on_key_release(self, key, modifiers):
-        """Called when the user releases a key. """
-
-        if key == arcade.key.UP or key == arcade.key.W:
-            self.player_sprite.change_y = 0
-        elif key == arcade.key.DOWN or key == arcade.key.S:
-            self.player_sprite.change_y = 0
-        elif key == arcade.key.LEFT or key == arcade.key.A:
-            self.player_sprite.change_x = 0
-        elif key == arcade.key.RIGHT or key == arcade.key.D:
-            self.player_sprite.change_x = 0
+    # 
 
 def main():
     """ Main method """
