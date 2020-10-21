@@ -19,10 +19,9 @@ MOVEMENT_SPEED = 60
 class Player(arcade.Sprite):
     def update(self):
         
- 
+        
         self.center_x += self.change_x
         self.center_y += self.change_y
-
         if self.left < 100:
             self.left = 100
         elif self.right > SCREEN_WIDTH - 100:
@@ -90,9 +89,10 @@ class GameView(arcade.View):
 
         self.time_taken = 0
         self.score=0
+        self.turn=0
         # Sprite lists
         self.player_list = arcade.SpriteList()
-        
+        self.dict={}
         self.player_sprite = None
         # Set up the player
         self.player_sprite = Player("1.png", SPRITE_SCALING)
@@ -104,27 +104,26 @@ class GameView(arcade.View):
 
         self.player_list.append(self.player_sprite)
         self.player_list.append(self.player_sprite2)
+        self.dict={1:self.player_sprite,2:self.player_sprite2}
         
         
-    # def on_show(self):
-    #     arcade.set_background_color(arcade.color.AMAZON)
-
-    #     # Don't show the mouse cursor
-    #     self.window.set_mouse_visible(False)
+    def on_show(self):
+        # Don't show the mouse cursor
+        self.window.set_mouse_visible(False)
 
     def on_draw(self):
         arcade.start_render()
+
         # Draw all the sprites.
         background = arcade.load_texture("menu4.jpg")
         arcade.draw_lrwh_rectangle_textured(0, 0,SCREEN_WIDTH, SCREEN_HEIGHT,background)
         self.player_list.draw()
-       
         # Put the text on the screen.
         output = f"Score: {self.score}"
         arcade.draw_text(output, 10, 30, arcade.color.WHITE, 14)
         output_total = f"Total Score: {self.window.total_score}"
         arcade.draw_text(output_total, 10, 10, arcade.color.WHITE, 14)
-        turn=f"Turn Of Player 1"
+        turn=f"Turn Of Player: {self.turn+1}"
         arcade.draw_text(turn, 350, 750, arcade.color.WHITE,20,italic=True)
 
         """ Making Grid"""
@@ -136,7 +135,7 @@ class GameView(arcade.View):
    
             arcade.draw_line(100,y,700,y,arcade.color.GRAY_BLUE,5)
     # for verticle line
-            arcade.draw_line(y,100,y,700,arcade.color.GRAY,5)
+            arcade.draw_line(y,100,y,700,arcade.color.GRAY_BLUE,5)
 
         # Draw all the sprites.
         """ Ending Grid"""
@@ -144,7 +143,10 @@ class GameView(arcade.View):
 
     def on_update(self, delta_time):
         self.time_taken += delta_time
-
+        self.player_sprite.change_x = 0
+        self.player_sprite.change_y = 0
+        self.player_sprite2.change_x = 0
+        self.player_sprite2.change_y = 0
         # Call update on all sprites (The sprites don't do much in this
         # example though.)
         
@@ -169,40 +171,97 @@ class GameView(arcade.View):
         """
         End Call of Game Over
         """
+        
+    
+
+       
         """
         Movement With Keyboard
+       
         """
-
         
     def on_key_press(self, key, modifiers):
         """Called whenever a key is pressed. """
+        if key == arcade.key.ESCAPE:
+            # pass self, the current view, to preserve this view's state
+            pause = PauseView(self)
+            self.window.show_view(pause)
+        if  self.turn==0:
+            self.turn+=1
+            if key == arcade.key.UP :
+                self.player_sprite.change_y = MOVEMENT_SPEED
+            elif key == arcade.key.DOWN :
+                self.player_sprite.change_y = -MOVEMENT_SPEED
+            elif key == arcade.key.LEFT :
+                self.player_sprite.change_x = -MOVEMENT_SPEED
+            elif key == arcade.key.RIGHT :
+                self.player_sprite.change_x = MOVEMENT_SPEED
+            self.player_list[0].update()
+        elif self.turn==1:    
+            self.turn-=1
+            if key == arcade.key.UP:
+                self.player_sprite2.change_y = MOVEMENT_SPEED
+            elif key == arcade.key.DOWN:
+                self.player_sprite2.change_y = -MOVEMENT_SPEED
+            elif key == arcade.key.LEFT:
+                self.player_sprite2.change_x = -MOVEMENT_SPEED
+            elif key == arcade.key.RIGHT:
+                self.player_sprite2.change_x = MOVEMENT_SPEED
+            self.player_list[1].update()
 
-        if key == arcade.key.UP or key == arcade.key.W:
-            self.player_sprite.change_y = MOVEMENT_SPEED
-        elif key == arcade.key.DOWN or key == arcade.key.S:
-            self.player_sprite.change_y = -MOVEMENT_SPEED
-        elif key == arcade.key.LEFT or key == arcade.key.A:
-            self.player_sprite.change_x = -MOVEMENT_SPEED
-        elif key == arcade.key.RIGHT or key == arcade.key.D:
-            self.player_sprite.change_x = MOVEMENT_SPEED
-        self.player_list.update()
-
-    def on_key_release(self, key, modifiers):
-        """Called when the user releases a key. """
-
-        if key == arcade.key.UP or key == arcade.key.W:
-            self.player_sprite.change_y = 0
-        elif key == arcade.key.DOWN or key == arcade.key.S:
-            self.player_sprite.change_y = 0
-        elif key == arcade.key.LEFT or key == arcade.key.A:
-            self.player_sprite.change_x = 0
-        elif key == arcade.key.RIGHT or key == arcade.key.D:
-            self.player_sprite.change_x = 0
+  
         """
        End of Movement With Keyboard
         """
    
 
+class PauseView(arcade.View):
+    def __init__(self, game_view):
+        super().__init__()
+        self.game_view = game_view
+
+    def on_show(self):
+        arcade.set_background_color(arcade.color.ORANGE)
+
+    def on_draw(self):
+        arcade.start_render()
+
+        # Draw player, for effect, on pause screen.
+        # The previous View (GameView) was passed in
+        # and saved in self.game_view.
+        player_sprite = self.game_view.player_sprite
+        player_sprite.draw()
+
+        # draw an orange filter over him
+        arcade.draw_lrtb_rectangle_filled(left=player_sprite.left,
+                                          right=player_sprite.right,
+                                          top=player_sprite.top,
+                                          bottom=player_sprite.bottom,
+                                          color=arcade.color.ORANGE + (200,))
+
+        arcade.draw_text("PAUSED", SCREEN_WIDTH/2, SCREEN_HEIGHT/2+50,
+                         arcade.color.BLACK, font_size=50, anchor_x="center")
+
+        # Show tip to return or reset
+        arcade.draw_text("Press Esc. to return",
+                         SCREEN_WIDTH/2,
+                         SCREEN_HEIGHT/2,
+                         arcade.color.BLACK,
+                         font_size=20,
+                         anchor_x="center")
+        arcade.draw_text("Press Enter to reset",
+                         SCREEN_WIDTH/2,
+                         SCREEN_HEIGHT/2-30,
+                         arcade.color.BLACK,
+                         font_size=20,
+                         anchor_x="center")
+
+    def on_key_press(self, key, _modifiers):
+        if key == arcade.key.ESCAPE:   # resume game
+            self.window.show_view(self.game_view)
+        elif key == arcade.key.ENTER:  # reset game
+            game = GameView()
+            self.window.show_view(game)
 
 def main():
     window = arcade.Window(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
