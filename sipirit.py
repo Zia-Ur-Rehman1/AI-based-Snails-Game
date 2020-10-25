@@ -1,11 +1,17 @@
 import arcade
 import os
 import random
-
+import math
 
 file_path = os.path.dirname(os.path.abspath(__file__))
 os.chdir(file_path)
-
+"""Backend Grid Move 
+    Player 1
+    x_move=int((-1/60)*x+(67/6))
+    y_move=int((1/60)*x-2)
+    Player 2
+    x_move=(-1/60)*x+(67/6)
+    y_move=int((1/60)*x(-21/10))"""
 
 SPRITE_SCALING = 0.10
 
@@ -18,8 +24,12 @@ MOVEMENT_SPEED = 60
 
 class Player(arcade.Sprite):
     def update(self):
-        
-        
+        x_move=(self.center_x + self.change_x)
+        y_move=(self.center_y + self.change_y)
+        print("X orignal Value",x_move,"/n")
+        x=((-1/60)*x_move+(67/6))
+        x=math.ceil(x)
+        print(x)
         self.center_x += self.change_x
         self.center_y += self.change_y
         if self.left < 100:
