@@ -5,15 +5,9 @@ import math
 
 file_path = os.path.dirname(os.path.abspath(__file__))
 os.chdir(file_path)
-"""Backend Grid Move 
-    Player 1
-    x_move=int((-1/60)*x+(67/6))
-    y_move=int((1/60)*x-2)
-    Player 2
-    x_move=(-1/60)*x+(67/6)
-    y_move=int((1/60)*x(-21/10))"""
 
 SPRITE_SCALING = 0.10
+board=[]
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 800
@@ -22,33 +16,17 @@ SCREEN_TITLE = "Khan Alone"
 MOVEMENT_SPEED = 60
 
 
-class Player(arcade.Sprite):
-    def update(self):
-        x_move=(self.center_x + self.change_x)
-        y_move=(self.center_y + self.change_y)
-        print("X orignal Value",x_move,"/n")
-        x=((-1/60)*x_move+(67/6))
-        x=math.ceil(x)
-        print(x)
-        self.center_x += self.change_x
-        self.center_y += self.change_y
-        if self.left < 100:
-            self.left = 100
-        elif self.right > SCREEN_WIDTH - 100:
-            self.right = SCREEN_WIDTH - 100
 
-        if self.bottom < 100:
-            self.bottom = 100
-        elif self.top > SCREEN_HEIGHT - 100:
-            self.top = SCREEN_HEIGHT - 100
-
+       
+            
+   
 class MenuView(arcade.View):
     def on_show(self):
         arcade.set_background_color(arcade.color.WHITE)
 
     def on_draw(self):
-        arcade.start_render()
         background = arcade.load_texture("menu4.jpg")
+        arcade.start_render()
         
         arcade.draw_lrwh_rectangle_textured(0, 0,SCREEN_WIDTH, SCREEN_HEIGHT,background)
         arcade.draw_text("Khan Alone", SCREEN_WIDTH/2, SCREEN_HEIGHT-270,
@@ -69,8 +47,10 @@ class InstructionView(arcade.View):
         arcade.set_background_color(arcade.color.ORANGE_PEEL)
 
     def on_draw(self):
-        arcade.start_render()
         background = arcade.load_texture("start.jpg")
+        snail = arcade.load_texture("1.png",)
+        snail = arcade.load_texture("2.png",flipped_horizontally=True)
+        arcade.start_render()
         
         arcade.draw_lrwh_rectangle_textured(0, 0,SCREEN_WIDTH, SCREEN_HEIGHT,background)
         arcade.draw_text("S N A I L S", SCREEN_WIDTH/2, SCREEN_HEIGHT-180,
@@ -79,9 +59,7 @@ class InstructionView(arcade.View):
        
         arcade.draw_text("Click To Begin The Challenge", SCREEN_WIDTH/2, SCREEN_HEIGHT-400,
                          arcade.color.GRAY_ASPARAGUS, font_size=25,bold=True,font_name='calibri', anchor_x="center")
-        snail = arcade.load_texture("1.png",)
         arcade.draw_lrwh_rectangle_textured(50, 600,100,100,snail)
-        snail = arcade.load_texture("2.png",flipped_horizontally=True)
         arcade.draw_lrwh_rectangle_textured(SCREEN_WIDTH-150, 600,100,100,snail)
 
     def on_mouse_press(self, _x, _y, _button, _modifiers):
@@ -89,135 +67,186 @@ class InstructionView(arcade.View):
         self.window.show_view(game_view)
 
 """End Instructions View"""
-"""Game Start"""
+"""                                         Game Start"""
 
 
 
 class GameView(arcade.View):
     def __init__(self):
         super().__init__()
-
         self.time_taken = 0
         self.score=0
         self.turn=0
+        self.state="Game On"
         # Sprite lists
-        self.player_list = arcade.SpriteList()
-        self.dict={}
-        self.player_sprite = None
+      
         # Set up the player
-        self.player_sprite = Player("1.png", SPRITE_SCALING)
-        self.player_sprite2 = Player("2.png", SPRITE_SCALING,flipped_horizontally=True)
-        self.player_sprite.center_x = 130
-        self.player_sprite.center_y = 120
-        self.player_sprite2.center_x =  SCREEN_WIDTH- 130
-        self.player_sprite2.center_y = SCREEN_HEIGHT- 134
+        
+       
+      
 
-        self.player_list.append(self.player_sprite)
-        self.player_list.append(self.player_sprite2)
-        self.dict={1:self.player_sprite,2:self.player_sprite2}
-        
-        
+    def initialize_board(self,rows,cols):
+        for i in range(cols): 
+            col = [] 
+            for j in range(rows): 
+                col.append(0) 
+            board.append(col) 
+        board[9][0],board[0][9]=1,2
+        for x in board:
+            print(x)
     def on_show(self):
         # Don't show the mouse cursor
-        self.window.set_mouse_visible(False)
+        self.window.set_mouse_visible(True)
 
     def on_draw(self):
-        arcade.start_render()
-
-        # Draw all the sprites.
         background = arcade.load_texture("menu4.jpg")
-        arcade.draw_lrwh_rectangle_textured(0, 0,SCREEN_WIDTH, SCREEN_HEIGHT,background)
-        self.player_list.draw()
-        # Put the text on the screen.
-        output = f"Score: {self.score}"
-        arcade.draw_text(output, 10, 30, arcade.color.WHITE, 14)
-        output_total = f"Total Score: {self.window.total_score}"
-        arcade.draw_text(output_total, 10, 10, arcade.color.WHITE, 14)
-        turn=f"Turn Of Player: {self.turn+1}"
-        arcade.draw_text(turn, 350, 750, arcade.color.WHITE,20,italic=True)
+        s1=arcade.load_texture('s1.png')
+        s2=arcade.load_texture('s2.png')
+        p1=arcade.load_texture('1.png')
+        p2=arcade.load_texture('2.png',flipped_horizontally=True)
 
-        """ Making Grid"""
-        box=int(600/10)
+        if(self.state=="Game On"):
+
+            arcade.start_render()
+        # Draw all the sprites.
+            arcade.draw_lrwh_rectangle_textured(0, 0,SCREEN_WIDTH, SCREEN_HEIGHT,background)
+            
+
+        # Put the text on the screen.
+            output = f"Score: {self.score}"
+            arcade.draw_text(output, 250, 750, arcade.color.WHITE, 14)
+            output_total = f"Total Score: {self.window.total_score}"
+            arcade.draw_text(output_total, 10, 10, arcade.color.WHITE, 14)
+            turn=f"Turn Of Player: {self.turn+1}"
+            # time_taken=f"Time Taken:{self.time_taken}"
+            arcade.draw_text(turn, 350, 750, arcade.color.WHITE,20,italic=True)
+            # arcade.draw_text(time_taken, 450, 700, arcade.color.WHITE,20,italic=True)
+        
+            """ Making Grid"""
+            box=int(600/10)
         
 # Started making grid  
-        for y in range (100,701,box):
+            for y in range (100,701,box):
     # for horizontal line 
    
-            arcade.draw_line(100,y,700,y,arcade.color.GRAY_BLUE,5)
+                arcade.draw_line(100,y,700,y,arcade.color.GRAY_BLUE,5)
     # for verticle line
-            arcade.draw_line(y,100,y,700,arcade.color.GRAY_BLUE,5)
-
+                arcade.draw_line(y,100,y,700,arcade.color.GRAY_BLUE,5)
+            for y in range(0,10):
+                for x in range(0,10):
+                    if(board[y][x]==11):
+                        arcade.draw_lrwh_rectangle_textured(100+(x*60),630-(60*y)+10,50,50,s1)
+                    elif(board[y][x]==22):
+                        arcade.draw_lrwh_rectangle_textured(100+(x*60),630-(60*y)+10,50,50,s2)
+                    elif(board[y][x]==1):
+                        arcade.draw_lrwh_rectangle_textured(100+(x*60),630-(60*y)+10,50,50,p1)
+                    elif(board[y][x]==2):
+                        arcade.draw_lrwh_rectangle_textured(100+(x*60),630-(60*y)+10,50,50,p2)
+            
         # Draw all the sprites.
-        """ Ending Grid"""
-        
+            """ Ending Grid"""
 
     def on_update(self, delta_time):
         self.time_taken += delta_time
-        self.player_sprite.change_x = 0
-        self.player_sprite.change_y = 0
-        self.player_sprite2.change_x = 0
-        self.player_sprite2.change_y = 0
-        # Call update on all sprites (The sprites don't do much in this
-        # example though.)
-        
-       # self.player_list.update()
-
-        # Generate a list of all sprites that collided with the player.
-       # hit_list = arcade.check_for_collision_with_list(self.player_sprite, self.coin_list)
-
-        # Loop through each colliding sprite, remove it, and add to the
-        # score.
-        
-        # If we've collected all the games, then move to a "GAME_OVER"
-        # state.
-        """
-        Call of Game Over
-        """
-        # if len(self.coin_list) == 0:
-        #     game_over_view = GameOverView()
-        #     game_over_view.time_taken = self.time_taken
-        #     self.window.set_mouse_visible(True)
-        #     self.window.show_view(game_over_view)
-        """
-        End Call of Game Over
-        """
-        
+     
+       
+   
+    def get_human_pos(self):
+        for row in range(len(board)):
+            for col in range(len(board)):
+                if board[row][col] == 1:
+                    print (row, col)
+                    return row , col
+    def get_bot_pos(self):
+        for row in range(len(board)):
+            for col in range(len(board)):
+                if board[row][col] == 2:
+                    return row , col
+ 
+    
     
 
-       
-        """
-        Movement With Keyboard
-       
-        """
-        
     def on_key_press(self, key, modifiers):
         """Called whenever a key is pressed. """
-        if key == arcade.key.ESCAPE:
-            # pass self, the current view, to preserve this view's state
-            pause = PauseView(self)
-            self.window.show_view(pause)
-        if  self.turn==0:
-            self.turn+=1
-            if key == arcade.key.UP :
-                self.player_sprite.change_y = MOVEMENT_SPEED
-            elif key == arcade.key.DOWN :
-                self.player_sprite.change_y = -MOVEMENT_SPEED
-            elif key == arcade.key.LEFT :
-                self.player_sprite.change_x = -MOVEMENT_SPEED
-            elif key == arcade.key.RIGHT :
-                self.player_sprite.change_x = MOVEMENT_SPEED
-            self.player_list[0].update()
-        elif self.turn==1:    
-            self.turn-=1
-            if key == arcade.key.UP:
-                self.player_sprite2.change_y = MOVEMENT_SPEED
-            elif key == arcade.key.DOWN:
-                self.player_sprite2.change_y = -MOVEMENT_SPEED
-            elif key == arcade.key.LEFT:
-                self.player_sprite2.change_x = -MOVEMENT_SPEED
-            elif key == arcade.key.RIGHT:
-                self.player_sprite2.change_x = MOVEMENT_SPEED
-            self.player_list[1].update()
+        if(self.state=="Game On"):
+            if key == arcade.key.ESCAPE:
+                exit(0)
+                # pass self, the current view, to preserve this view's state
+                # pause = PauseView(self)
+                # self.window.show_view(pause)
+            elif  self.turn==0:
+                x,y=self.get_human_pos()
+                if key == arcade.key.UP :
+                    if(x==0 or board[x-1]==2 or board[x-1]==11 or board[x-1]==22):
+                        pass
+                    elif(board[x-1][y]==0):
+                        board[x][y]=11
+                        board[x-1][y]=1
+
+                     
+                    
+                elif key == arcade.key.DOWN :
+                    if(x==9 or board[x+1]==2 or board[x+1]==11 or board[x+1]==22):
+                        pass
+                    elif(board[x+1][y]==0):
+                        board[x][y],board[x+1][y]=11,1
+
+                        
+                     
+                elif key == arcade.key.LEFT :
+                    if(y==0 or board[y-1]==2 or board[y-1]==11 or board[y-1]==22):
+                        pass
+                    elif(board[x][y-1]==0):
+                        board[x][y]=11
+                        board[x][y-1]=1
+
+                     
+                elif key == arcade.key.RIGHT :
+                    if(y==9 or board[y+1]==2 or board[y+1]==11 or board[y+1]==22):
+                        pass
+                    elif(board[x][y+1]==0):
+                        board[x][y]=11
+                        board[x][y+1]=1
+                  
+                   
+                
+                self.turn+=1
+
+            elif self.turn==1:    
+                x,y=self.get_bot_pos()
+                if key == arcade.key.UP :
+                    if(x==0 or board[x-1]==1 or board[x-1]==11 or board[x-1]==22):
+                        pass
+                    elif(board[x-1][y]==0):
+                        board[x][y]=22
+                        board[x-1][y]=2
+
+                        
+                elif key == arcade.key.DOWN :
+                    if(x==9 or board[x+1]==1 or board[x+1]==11 or board[x+1]==22):
+                        pass
+                    elif(board[x+1][y]==0):
+                        board[x][y],board[x+1][y]=22,2
+
+                    
+                elif key == arcade.key.LEFT :
+                    if(y==0 or board[y-1]==1 or board[y-1]==11 or board[y-1]==22):
+                        pass
+                    elif(board[x][y-1]==0):
+                        board[x][y]=22
+                        board[x][y-1]=2
+
+                     
+                      
+                elif key == arcade.key.RIGHT :
+                    if(y==9 or board[y+1]==1 or board[y+1]==11 or board[y+1]==22):
+                        pass
+                    elif(board[x][y+1]==0):
+                        board[x][y]=22
+                        board[x][y+1]=2
+                    
+                       
+                self.turn-=1
 
   
         """
@@ -265,6 +294,7 @@ class PauseView(arcade.View):
                          arcade.color.BLACK,
                          font_size=20,
                          anchor_x="center")
+        
 
     def on_key_press(self, key, _modifiers):
         if key == arcade.key.ESCAPE:   # resume game
@@ -274,10 +304,15 @@ class PauseView(arcade.View):
             self.window.show_view(game)
 
 def main():
-    window = arcade.Window(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
+    
+    window = arcade.Window(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE,resizable=True)
     window.total_score = 0
     menu_view = MenuView()
+    window.center_window()
     window.show_view(menu_view)
+    rows, cols = (10, 10)
+    g=GameView()
+    g.initialize_board(rows,cols)
     arcade.run()
 
 
