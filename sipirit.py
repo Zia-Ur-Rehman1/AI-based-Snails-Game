@@ -150,7 +150,10 @@ class GameView(arcade.View):
         self.time_taken += delta_time
      
        
-   
+    # def slip(self,x):
+    #     for i in range(len(board)):
+
+        
     def get_human_pos(self):
         for row in range(len(board)):
             for col in range(len(board)):
@@ -162,92 +165,161 @@ class GameView(arcade.View):
             for col in range(len(board)):
                 if board[row][col] == 2:
                     return row , col
- 
+
+    def slip_up(self , x , y , i , j):
+        for x in range(x , 0 , -1):
+            if(x - 1 == 0):
+                return x-1 , y
+            if board[x-1][y] == 0 or board[x-1][y]==i or board[x-1][y]==j:
+                return x , y
+    def slip_down(self , x , y , i ,j):
+        for x in range(x , 9 , 1):
+            if(x + 1 == 9):
+                return x+1 , y
+            if board[x+1][y] == 0 or board[x+1][y]==i or board[x+1][y]==j:
+                return x , y
+    
+    def slip_left(self , x , y , i ,j):
+        for y in range(y , 0 , -1):
+            if(y - 1 == 0):
+                return x , y-1
+            if board[x][y-1] == 0 or board[x][y-1]==i or board[x][y-1]==j:
+                return x , y
+    def slip_right(self , x , y , i ,j):
+        for y in range(y , 9 , 1):
+            if(y + 1 == 9):
+                return x , y+1
+            if board[x][y+1] == 0 or board[x][y+1]==i or board[x][y+1]==j:
+                return x , y
     
     
 
-    def on_key_press(self, key, modifiers):
-        """Called whenever a key is pressed. """
-        if(self.state=="Game On"):
+    def on_key_press(self , key , modifiers):
+        if self.state == "Game On":
             if key == arcade.key.ESCAPE:
                 exit(0)
-                # pass self, the current view, to preserve this view's state
-                # pause = PauseView(self)
-                # self.window.show_view(pause)
-            elif  self.turn==0:
-                x,y=self.get_human_pos()
-                if key == arcade.key.UP :
-                    if(x==0 or board[x-1]==2 or board[x-1]==11 or board[x-1]==22):
-                        pass
-                    elif(board[x-1][y]==0):
-                        board[x][y]=11
-                        board[x-1][y]=1
-
-                     
-                    
-                elif key == arcade.key.DOWN :
-                    if(x==9 or board[x+1]==2 or board[x+1]==11 or board[x+1]==22):
-                        pass
-                    elif(board[x+1][y]==0):
-                        board[x][y],board[x+1][y]=11,1
-
+            if self.turn == 0:
+                self.turn = 1
+                self.i = 22
+                self.j = 2
+                x , y = self.get_human_pos()
                         
-                     
-                elif key == arcade.key.LEFT :
-                    if(y==0 or board[y-1]==2 or board[y-1]==11 or board[y-1]==22):
-                        pass
-                    elif(board[x][y-1]==0):
-                        board[x][y]=11
-                        board[x][y-1]=1
+                if key == arcade.key.UP:
+                    if(x==0 and board[x][y]==1):
+                            board[x][y] = 1
 
-                     
-                elif key == arcade.key.RIGHT :
-                    if(y==9 or board[y+1]==2 or board[y+1]==11 or board[y+1]==22):
-                        pass
-                    elif(board[x][y+1]==0):
-                        board[x][y]=11
-                        board[x][y+1]=1
-                  
+                    elif board[x-1][y] == 11:
+                            board[x][y] = 11
+                            x , y = self.slip_up(x , y , self.i , self.j)
+                            board[x][y] = 1
+                    
+                    elif board[x-1][y] == 0:
+                        
+                        board[x][y] = 11
+                        board[x-1][y] = 1
+                        
+
+                    
+                elif key == arcade.key.DOWN:
+                    if(x==9 and board[x][y]==1):
+                            board[x][y] = 1
+ 
+                    # x , y = self.get_human_pos()
+                    elif(board[x+1][y] == 11):
+                        board[x][y] = 11
+                        x , y = self.slip_down(x , y , self.i , self.j)
+                        board[x][y] = 1
+                        # raise Exception("Invalid Move")
+                        
+                    elif board[x+1][y] == 0:
+                            
+                        board[x][y] = 11
+                        board[x+1][y] = 1
+                            
+                elif key == arcade.key.LEFT:
+                    if(y==0 and board[x][y]==1):
+                            board[x][y] = 1
+
+                    elif(board[x][y-1] == 11):
+                        board[x][y] = 11
+                        x , y = self.slip_left(x , y , self.i , self.j)
+                        board[x][y] = 1
                    
+                    elif board[x][y-1] == 0:
+                        board[x][y] = 11
+                        board[x][y-1] = 1
+
+                elif key == arcade.key.RIGHT:
+                    if(y==9 and board[x][y]==1):
+                            board[x][y] = 1
+
+                    elif(board[x][y+1] == 11):
+                        board[x][y] = 11
+                        x , y = self.slip_right(x , y , self.i , self.j)
+                        board[x][y] = 1
+                    elif board[x][y+1] == 0:
+                        board[x][y] = 11
+                        board[x][y+1] = 1
                 
-                self.turn+=1
+            elif self.turn == 1:
+                self.turn=0
+                self.i = 11
+                self.j = 1
+                x , y = self.get_bot_pos()
+                if key == arcade.key.UP:
+                    if(x==0 and board[x][y]==2):
+                            board[x][y] = 2
+                    elif board[x-1][y] == 22:
+                            board[x][y] = 22
+                            x , y = self.slip_up(x , y , self.i , self.j)
+                            board[x][y] = 2
+                    elif board[x-1][y] == 0:
+                        board[x][y] = 22
+                        board[x-1][y] = 2
 
-            elif self.turn==1:    
-                x,y=self.get_bot_pos()
-                if key == arcade.key.UP :
-                    if(x==0 or board[x-1]==1 or board[x-1]==11 or board[x-1]==22):
-                        pass
-                    elif(board[x-1][y]==0):
-                        board[x][y]=22
-                        board[x-1][y]=2
+                elif key == arcade.key.DOWN:
+                    if(x==9 and board[x][y]==2):
+                            board[x][y] = 2                    
+                    elif board[x+1][y] == 22:
 
-                        
-                elif key == arcade.key.DOWN :
-                    if(x==9 or board[x+1]==1 or board[x+1]==11 or board[x+1]==22):
-                        pass
-                    elif(board[x+1][y]==0):
-                        board[x][y],board[x+1][y]=22,2
+                        board[x][y] = 22
+                        x , y = self.slip_down(x , y , self.i , self.j)
+                        board[x][y] = 2
+              
+                    elif board[x+1][y] == 0:
+                            
+                        board[x][y] = 22
+                        board[x+1][y] = 2
+                            
+                elif key == arcade.key.LEFT:
+                    if(y==0 and board[x][y]==2):
+                            board[x][y] = 2
+                    elif board[x][y-1] == 22:
+
+                        board[x][y] = 22
+                        x , y = self.slip_left(x , y , self.i , self.j)
+                        board[x][y] = 2
+                    
+                    elif board[x][y-1] == 0:
+
+                        board[x][y] = 22
+                        board[x][y-1] = 2
+
+                elif key == arcade.key.RIGHT:
+                    if(y==9 and board[x][y]==2):
+                            board[x][y] = 2                    # x , y = self.get_human_pos()
+                    elif board[x][y+1] == 22:
+
+                        board[x][y] = 22
+                        x , y = self.slip_right(x , y ,self.i , self.j)
+                        board[x][y] = 2
 
                     
-                elif key == arcade.key.LEFT :
-                    if(y==0 or board[y-1]==1 or board[y-1]==11 or board[y-1]==22):
-                        pass
-                    elif(board[x][y-1]==0):
-                        board[x][y]=22
-                        board[x][y-1]=2
+                            
+                    elif board[x][y+1] == 0:
 
-                     
-                      
-                elif key == arcade.key.RIGHT :
-                    if(y==9 or board[y+1]==1 or board[y+1]==11 or board[y+1]==22):
-                        pass
-                    elif(board[x][y+1]==0):
-                        board[x][y]=22
-                        board[x][y+1]=2
-                    
-                       
-                self.turn-=1
-
+                        board[x][y] = 22
+                        board[x][y+1] = 2
   
         """
        End of Movement With Keyboard
@@ -260,7 +332,7 @@ class PauseView(arcade.View):
         self.game_view = game_view
 
     def on_show(self):
-        arcade.set_background_color(arcade.color.ORANGE)
+        arcade.set_background_color(arcade.color.RED_DEVIL)
 
     def on_draw(self):
         arcade.start_render()
@@ -268,18 +340,18 @@ class PauseView(arcade.View):
         # Draw player, for effect, on pause screen.
         # The previous View (GameView) was passed in
         # and saved in self.game_view.
-        player_sprite = self.game_view.player_sprite
-        player_sprite.draw()
+        # player_sprite = self.game_view.player_sprite
+        # player_sprite.draw()
 
-        # draw an orange filter over him
-        arcade.draw_lrtb_rectangle_filled(left=player_sprite.left,
-                                          right=player_sprite.right,
-                                          top=player_sprite.top,
-                                          bottom=player_sprite.bottom,
-                                          color=arcade.color.ORANGE + (200,))
+        # # draw an orange filter over him
+        # arcade.draw_lrtb_rectangle_filled(left=player_sprite.left,
+        #                                   right=player_sprite.right,
+        #                                   top=player_sprite.top,
+        #                                   bottom=player_sprite.bottom,
+        #                                   color=arcade.color.ORANGE + (200,))
 
-        arcade.draw_text("PAUSED", SCREEN_WIDTH/2, SCREEN_HEIGHT/2+50,
-                         arcade.color.BLACK, font_size=50, anchor_x="center")
+        # arcade.draw_text("PAUSED", SCREEN_WIDTH/2, SCREEN_HEIGHT/2+50,
+        #                  arcade.color.BLACK, font_size=50, anchor_x="center")
 
         # Show tip to return or reset
         arcade.draw_text("Press Esc. to return",
@@ -300,6 +372,8 @@ class PauseView(arcade.View):
         if key == arcade.key.ESCAPE:   # resume game
             self.window.show_view(self.game_view)
         elif key == arcade.key.ENTER:  # reset game
+            # board.clear()
+            # board[9][0],board[0][9]=1,2
             game = GameView()
             self.window.show_view(game)
 
