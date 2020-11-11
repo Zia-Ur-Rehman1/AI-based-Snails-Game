@@ -48,8 +48,8 @@ class InstructionView(arcade.View):
 
     def on_draw(self):
         background = arcade.load_texture("start.jpg")
-        snail = arcade.load_texture("1.png",)
-        snail = arcade.load_texture("2.png",flipped_horizontally=True)
+        snail = arcade.load_texture("1.png")
+        snail2 = arcade.load_texture("2.png",flipped_horizontally=True)
         arcade.start_render()
         
         arcade.draw_lrwh_rectangle_textured(0, 0,SCREEN_WIDTH, SCREEN_HEIGHT,background)
@@ -60,7 +60,7 @@ class InstructionView(arcade.View):
         arcade.draw_text("Click To Begin The Challenge", SCREEN_WIDTH/2, SCREEN_HEIGHT-400,
                          arcade.color.GRAY_ASPARAGUS, font_size=25,bold=True,font_name='calibri', anchor_x="center")
         arcade.draw_lrwh_rectangle_textured(50, 600,100,100,snail)
-        arcade.draw_lrwh_rectangle_textured(SCREEN_WIDTH-150, 600,100,100,snail)
+        arcade.draw_lrwh_rectangle_textured(SCREEN_WIDTH-150, 600,100,100,snail2)
 
     def on_mouse_press(self, _x, _y, _button, _modifiers):
         game_view = GameView()
@@ -76,6 +76,7 @@ class GameView(arcade.View):
         super().__init__()
         self.time_taken = 0
         self.score=0
+        self.score2=0
         self.turn=0
         self.state="Game On"
         # Sprite lists
@@ -92,8 +93,7 @@ class GameView(arcade.View):
                 col.append(0) 
             board.append(col) 
         board[9][0],board[0][9]=1,2
-        for x in board:
-            print(x)
+       
     def on_show(self):
         # Don't show the mouse cursor
         self.window.set_mouse_visible(True)
@@ -106,17 +106,21 @@ class GameView(arcade.View):
         p2=arcade.load_texture('2.png',flipped_horizontally=True)
 
         if(self.state=="Game On"):
-
+         
             arcade.start_render()
         # Draw all the sprites.
             arcade.draw_lrwh_rectangle_textured(0, 0,SCREEN_WIDTH, SCREEN_HEIGHT,background)
             
+            arcade.draw_lrwh_rectangle_textured(30,700,50,50,p1)
+            arcade.draw_lrwh_rectangle_textured(720,700,50,50,p2)
 
         # Put the text on the screen.
-            output = f"Score: {self.score}"
-            arcade.draw_text(output, 250, 750, arcade.color.WHITE, 14)
+            output = f"Score \nP1: {self.score}"
+            output2 = f"Score \nP2: {self.score2}"
+            arcade.draw_text(output,15,650, arcade.color.WHITE, 20)
+            arcade.draw_text(output2,720,650, arcade.color.WHITE, 20)
             output_total = f"Total Score: {self.window.total_score}"
-            arcade.draw_text(output_total, 10, 10, arcade.color.WHITE, 14)
+            arcade.draw_text(output_total, 350, 700, arcade.color.WHITE, 20)
             turn=f"Turn Of Player: {self.turn+1}"
             # time_taken=f"Time Taken:{self.time_taken}"
             arcade.draw_text(turn, 350, 750, arcade.color.WHITE,20,italic=True)
@@ -135,14 +139,36 @@ class GameView(arcade.View):
             for y in range(0,10):
                 for x in range(0,10):
                     if(board[y][x]==11):
+                        
                         arcade.draw_lrwh_rectangle_textured(100+(x*60),630-(60*y)+10,50,50,s1)
                     elif(board[y][x]==22):
+                        
                         arcade.draw_lrwh_rectangle_textured(100+(x*60),630-(60*y)+10,50,50,s2)
                     elif(board[y][x]==1):
                         arcade.draw_lrwh_rectangle_textured(100+(x*60),630-(60*y)+10,50,50,p1)
                     elif(board[y][x]==2):
                         arcade.draw_lrwh_rectangle_textured(100+(x*60),630-(60*y)+10,50,50,p2)
-            
+        elif(self.state=="Game Over"):
+            background = arcade.load_texture("menu4.jpg")
+            if(self.score>49):
+        
+                arcade.draw_lrwh_rectangle_textured(0, 0,SCREEN_WIDTH, SCREEN_HEIGHT,background)
+
+                arcade.draw_text("Player 1 Win \nNice Played",SCREEN_WIDTH/2, SCREEN_HEIGHT-180,
+                         arcade.color.SKY_BLUE, font_size=50, bold=True,anchor_x="center")
+            elif(self.score2>6):
+                arcade.draw_lrwh_rectangle_textured(0, 0,SCREEN_WIDTH, SCREEN_HEIGHT,background)
+
+                arcade.draw_text("Player 2 Win \nNice Played",SCREEN_WIDTH/2, SCREEN_HEIGHT-180,
+                         arcade.color.SKY_BLUE, font_size=50, bold=True,anchor_x="center")
+                arcade.draw_text("Press Esc To Exit \n Enter To Reset",400, 500,
+                         arcade.color.SKY_BLUE, font_size=50, bold=True,anchor_x="center")
+            else:
+                arcade.draw_lrwh_rectangle_textured(0, 0,SCREEN_WIDTH, SCREEN_HEIGHT,background)
+
+                arcade.draw_text("Draw \nNice Played",SCREEN_WIDTH/2, SCREEN_HEIGHT-180,
+                         arcade.color.SKY_BLUE, font_size=50, bold=True,anchor_x="center")
+
         # Draw all the sprites.
             """ Ending Grid"""
 
@@ -150,15 +176,10 @@ class GameView(arcade.View):
         self.time_taken += delta_time
      
        
-    # def slip(self,x):
-    #     for i in range(len(board)):
-
-        
     def get_human_pos(self):
         for row in range(len(board)):
             for col in range(len(board)):
                 if board[row][col] == 1:
-                    print (row, col)
                     return row , col
     def get_bot_pos(self):
         for row in range(len(board)):
@@ -192,8 +213,25 @@ class GameView(arcade.View):
             if board[x][y+1] == 0 or board[x][y+1]==i or board[x][y+1]==j:
                 return x , y
     
-    
+    def score_count(self):
+        self.score=0
+        self.score2=0
+        for x in range(0,10):
+            for y in range(0,10):
+                if board[x][y]==11:
+                    self.score+=1
+                elif board[x][y]==22:
+                    self.score2+=1
 
+
+    def eval(self):
+        if(self.score>49):
+            self.state='Game Over'
+        elif(self.score2>6):
+            self.state='Game Over'
+        elif(self.score==49 and self.score2==49):
+            self.state='Game Over'
+          
     def on_key_press(self , key , modifiers):
         if self.state == "Game On":
             if key == arcade.key.ESCAPE:
@@ -260,7 +298,8 @@ class GameView(arcade.View):
                     elif board[x][y+1] == 0:
                         board[x][y] = 11
                         board[x][y+1] = 1
-                
+                self.score_count()    
+                self.eval()
             elif self.turn == 1:
                 self.turn=0
                 self.i = 11
@@ -320,62 +359,21 @@ class GameView(arcade.View):
 
                         board[x][y] = 22
                         board[x][y+1] = 2
-  
-        """
-       End of Movement With Keyboard
-        """
+                self.score_count()    
+                self.eval()
+        elif(self.state=='Game Over'):
+            if key == arcade.key.ESCAPE:   # resume game
+                exit(0)
+            elif key == arcade.key.ENTER:  # reset game
+                game = GameView()
+                self.window.show_view(game)
+        
    
 
-class PauseView(arcade.View):
-    def __init__(self, game_view):
-        super().__init__()
-        self.game_view = game_view
 
-    def on_show(self):
-        arcade.set_background_color(arcade.color.RED_DEVIL)
 
-    def on_draw(self):
-        arcade.start_render()
+  
 
-        # Draw player, for effect, on pause screen.
-        # The previous View (GameView) was passed in
-        # and saved in self.game_view.
-        # player_sprite = self.game_view.player_sprite
-        # player_sprite.draw()
-
-        # # draw an orange filter over him
-        # arcade.draw_lrtb_rectangle_filled(left=player_sprite.left,
-        #                                   right=player_sprite.right,
-        #                                   top=player_sprite.top,
-        #                                   bottom=player_sprite.bottom,
-        #                                   color=arcade.color.ORANGE + (200,))
-
-        # arcade.draw_text("PAUSED", SCREEN_WIDTH/2, SCREEN_HEIGHT/2+50,
-        #                  arcade.color.BLACK, font_size=50, anchor_x="center")
-
-        # Show tip to return or reset
-        arcade.draw_text("Press Esc. to return",
-                         SCREEN_WIDTH/2,
-                         SCREEN_HEIGHT/2,
-                         arcade.color.BLACK,
-                         font_size=20,
-                         anchor_x="center")
-        arcade.draw_text("Press Enter to reset",
-                         SCREEN_WIDTH/2,
-                         SCREEN_HEIGHT/2-30,
-                         arcade.color.BLACK,
-                         font_size=20,
-                         anchor_x="center")
-        
-
-    def on_key_press(self, key, _modifiers):
-        if key == arcade.key.ESCAPE:   # resume game
-            self.window.show_view(self.game_view)
-        elif key == arcade.key.ENTER:  # reset game
-            # board.clear()
-            # board[9][0],board[0][9]=1,2
-            game = GameView()
-            self.window.show_view(game)
 
 def main():
     
