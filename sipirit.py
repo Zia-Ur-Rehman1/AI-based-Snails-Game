@@ -78,7 +78,10 @@ class GameView(arcade.View):
         self.score=0
         self.score2=0
         self.turn=0
+        self.temp_board=[]
         self.state="Game On"
+        rows, cols = (10, 10)
+        self.initialize_board(rows,cols)
         # Sprite lists
       
         # Set up the player
@@ -142,7 +145,6 @@ class GameView(arcade.View):
                         
                         arcade.draw_lrwh_rectangle_textured(100+(x*60),630-(60*y)+10,50,50,s1)
                     elif(board[y][x]==22):
-                        
                         arcade.draw_lrwh_rectangle_textured(100+(x*60),630-(60*y)+10,50,50,s2)
                     elif(board[y][x]==1):
                         arcade.draw_lrwh_rectangle_textured(100+(x*60),630-(60*y)+10,50,50,p1)
@@ -156,19 +158,20 @@ class GameView(arcade.View):
 
                 arcade.draw_text("Player 1 Win \nNice Played",SCREEN_WIDTH/2, SCREEN_HEIGHT-180,
                          arcade.color.SKY_BLUE, font_size=50, bold=True,anchor_x="center")
-            elif(self.score2>6):
+                arcade.draw_text("Press Esc To Exit \n Enter To Reset",400, 500,
+                         arcade.color.SKY_BLUE, font_size=50, bold=True,anchor_x="center")
+            elif(self.score2>49):
                 arcade.draw_lrwh_rectangle_textured(0, 0,SCREEN_WIDTH, SCREEN_HEIGHT,background)
-
                 arcade.draw_text("Player 2 Win \nNice Played",SCREEN_WIDTH/2, SCREEN_HEIGHT-180,
                          arcade.color.SKY_BLUE, font_size=50, bold=True,anchor_x="center")
                 arcade.draw_text("Press Esc To Exit \n Enter To Reset",400, 500,
                          arcade.color.SKY_BLUE, font_size=50, bold=True,anchor_x="center")
             else:
                 arcade.draw_lrwh_rectangle_textured(0, 0,SCREEN_WIDTH, SCREEN_HEIGHT,background)
-
                 arcade.draw_text("Draw \nNice Played",SCREEN_WIDTH/2, SCREEN_HEIGHT-180,
                          arcade.color.SKY_BLUE, font_size=50, bold=True,anchor_x="center")
-
+                arcade.draw_text("Press Esc To Exit \n Enter To Reset",400, 500,    
+                         arcade.color.SKY_BLUE, font_size=50, bold=True,anchor_x="center")
         # Draw all the sprites.
             """ Ending Grid"""
 
@@ -185,7 +188,7 @@ class GameView(arcade.View):
         for row in range(len(board)):
             for col in range(len(board)):
                 if board[row][col] == 2:
-                    return row , col
+                    return row,col
 
     def slip_up(self , x , y , i , j):
         for x in range(x , 0 , -1):
@@ -222,15 +225,59 @@ class GameView(arcade.View):
                     self.score+=1
                 elif board[x][y]==22:
                     self.score2+=1
-
-
     def eval(self):
         if(self.score>49):
             self.state='Game Over'
-        elif(self.score2>6):
+        elif(self.score2>49):
             self.state='Game Over'
         elif(self.score==49 and self.score2==49):
             self.state='Game Over'
+   
+    def possible_move(self,x,y,i,j):
+        if(((i-1==x and x>=0) or (i+1==x and x<=9)) and j==y):
+            return True
+        if(((j-1==y and y>0)or (j+1==y and y<=9)) and i==x):
+            return True
+        return False
+   
+    def max(self):
+        maxv=-100
+        px=None
+        py=None
+        self.eval()
+        for i in range(0,10):
+            for j in range(0,10):
+                if (board[i][j]==0):
+                    x,y=self.get_bot_pos()
+                    valid=self.possible_move(i,j,x,y)
+                    if(valid==True):
+                        board[i][j]=22
+                        (m,min_i,min_j)=self.min()
+                        if(m>maxv):
+                            maxv=m
+                            px=i
+                            py=j
+                        board[i][j]=0
+        return(maxv,px,py)            
+    def min(self):
+        minv=100
+        qx=None
+        qy=None
+        self.eval()
+        for i in range(0,10):
+            for j in range(0,10):
+                if (board[i][j]==0):
+                    x,y=self.get_human_pos()
+                    valid=self.possible_move(x,y,i,j)
+                    if(valid==True):
+                        board[i][j]=11
+                        (m,max_i,max_j)=self.max()
+                        if(m<minv):
+                            minv=m
+                            qx=i
+                            qy=j
+                        board[i][j]=0
+        return(minv,qx,qy)            
           
     def on_key_press(self , key , modifiers):
         if self.state == "Game On":
@@ -304,75 +351,20 @@ class GameView(arcade.View):
                 self.turn=0
                 self.i = 11
                 self.j = 1
-                x , y = self.get_bot_pos()
-                if key == arcade.key.UP:
-                    if(x==0 and board[x][y]==2):
-                            board[x][y] = 2
-                    elif board[x-1][y] == 22:
-                            board[x][y] = 22
-                            x , y = self.slip_up(x , y , self.i , self.j)
-                            board[x][y] = 2
-                    elif board[x-1][y] == 0:
-                        board[x][y] = 22
-                        board[x-1][y] = 2
-
-                elif key == arcade.key.DOWN:
-                    if(x==9 and board[x][y]==2):
-                            board[x][y] = 2                    
-                    elif board[x+1][y] == 22:
-
-                        board[x][y] = 22
-                        x , y = self.slip_down(x , y , self.i , self.j)
-                        board[x][y] = 2
-              
-                    elif board[x+1][y] == 0:
-                            
-                        board[x][y] = 22
-                        board[x+1][y] = 2
-                            
-                elif key == arcade.key.LEFT:
-                    if(y==0 and board[x][y]==2):
-                            board[x][y] = 2
-                    elif board[x][y-1] == 22:
-
-                        board[x][y] = 22
-                        x , y = self.slip_left(x , y , self.i , self.j)
-                        board[x][y] = 2
-                    
-                    elif board[x][y-1] == 0:
-
-                        board[x][y] = 22
-                        board[x][y-1] = 2
-
-                elif key == arcade.key.RIGHT:
-                    if(y==9 and board[x][y]==2):
-                            board[x][y] = 2                    # x , y = self.get_human_pos()
-                    elif board[x][y+1] == 22:
-
-                        board[x][y] = 22
-                        x , y = self.slip_right(x , y ,self.i , self.j)
-                        board[x][y] = 2
-
-                    
-                            
-                    elif board[x][y+1] == 0:
-
-                        board[x][y] = 22
-                        board[x][y+1] = 2
+                x,y = self.get_bot_pos()
+                score,x,y=self.max()
+                board[x][y]=22                            
                 self.score_count()    
                 self.eval()
         elif(self.state=='Game Over'):
             if key == arcade.key.ESCAPE:   # resume game
                 exit(0)
             elif key == arcade.key.ENTER:  # reset game
+                board.clear()
                 game = GameView()
                 self.window.show_view(game)
         
    
-
-
-
-  
 
 
 def main():
@@ -382,9 +374,7 @@ def main():
     menu_view = MenuView()
     window.center_window()
     window.show_view(menu_view)
-    rows, cols = (10, 10)
-    g=GameView()
-    g.initialize_board(rows,cols)
+  
     arcade.run()
 
 
