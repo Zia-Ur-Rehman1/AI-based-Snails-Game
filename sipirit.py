@@ -240,57 +240,54 @@ class GameView(arcade.View):
         elif(((j-1==y and y>0)or (j+1==y and y<=9)) and i==x):
             return True
         return False
-   
-    # def max(self,depth):
-    #     maxv=-100
-    #     move=100
-    #     px=None
-    #     py=None
-    #     self.eval()
-    #     if(depth<3):
-    #         for i in range(0,10):
-    #             for j in range(0,10):
-    #                 if (board[i][j]==0):
-    #                     x,y=self.get_bot_pos()
-    #                     valid=self.possible_move(x,y,i,j)
-    #                     #check for possible move
-    #                     # after that check for heuristic move
-    #                     #Then allow the best move
-    #                     if(valid==True):
-    #                         hx,hy=self.get_human_pos()
-    #                         # i j is the next position he will get
-    #                         h=abs(i-hx)+abs(j-hy)
-    #                         if(move>h):
-    #                             board[i][j]=2
-    #                             (m,min_i,min_j)=self.min(depth+1)
-    #                             if(m>maxv+h):
-    #                                 maxv=m
-    #                                 px=i
-    #                                 py=j
-    #                             board[i][j]=0
-    #     return(maxv,px,py)            
-    # def min(self,depth):
-    #     minv=100
-    #     qx=None
-    #     qy=None
-    #     self.eval()
-    #     if(depth<3):
-    #         for i in range(0,10):
-    #             for j in range(0,10):
-    #                 if (board[i][j]==0):
-    #                     x,y=self.get_human_pos()
-    #                     valid=self.possible_move(x,y,i,j)
-                        
-    #                     if(valid==True):
-    #                         board[i][j]=1
-    #                         (m,max_i,max_j)=self.max(depth+1)
-    #                         if(m<minv):
-    #                             minv=m
-    #                             qx=i
-    #                             qy=j
-    #                         board[i][j]=0
-    #     return(minv,qx,qy)            
-          
+    def heuristic(self,x,y):
+        temp=100
+        best_x=None
+        best_y=None
+        temp_x=None
+        temp_y=None
+        previous_x=None
+        previous_y=None
+        #best serach to reach oppenet using empty spaces
+        for i in range(0,10):
+            for j in range(0,10):
+                #Chek empty spaces
+                if(board[i][j]==0):
+                    #check valid move
+                    valid=self.possible_move(x,y,i,j)
+                    if(valid==True):
+                        #store them in temporarily
+                        #because if it is not minimizing the distance the bot will not 
+                        #take that move due to temp>h condition
+                        temp_x=i
+                        temp_y=j
+                        hx,hy=self.get_human_pos()
+                        #check the distance
+                        h=abs(i-hx)+abs(j-hy)
+                        #suppose there were two valid move having same distance
+                        #bot will only take the first one
+                        #now check the movemnet towards center 
+                        #get the best one
+                        if(previous_x!=None):
+                            h2=abs(previous_x-5)+abs(previous_y-5)
+                            h1=abs(i-5)+abs(j-5)
+                            if(h1<h2):
+                                h=h-2
+                        if(temp>h):
+                            temp=h
+                            best_x=i
+                            best_y=j
+                            previous_x=i
+                            previous_y=j
+                        #when all sides have spashes or sprite even temp_x can b none
+        if(best_x==None and temp_x !=None):
+            best_x=temp_x
+            best_y=temp_y
+        else:
+            #here we will implement strategy about splash movements
+            pass
+        return (best_x,best_y)
+        
     def on_key_press(self , key , modifiers):
         
         if self.state == "Game On":
@@ -365,13 +362,11 @@ class GameView(arcade.View):
                 self.i = 11
                 self.j = 1
                 bot_x,bot_y = self.get_bot_pos()
-                hx,hy=self.get_human_pos()
-                h=abs(bot_x-hx)+abs(bot_y-hy)
-                score,sp_x,sp_y=self.max(0)
+                sp_x,sp_y=self.heuristic(bot_x,bot_y)
+                # print(sp_x,sp_y)
                 if(sp_x!=None):
                     board[bot_x][bot_y]=22
                     board[sp_x][sp_y]=2
-          
                 self.score_count()    
                 self.eval()
         elif(self.state=='Game Over'):
