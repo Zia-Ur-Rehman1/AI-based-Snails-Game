@@ -234,52 +234,65 @@ class GameView(arcade.View):
             self.state='Game Over'
    
     def possible_move(self,x,y,i,j):
+       
         if(((i-1==x and x>=0) or (i+1==x and x<=9)) and j==y):
             return True
-        if(((j-1==y and y>0)or (j+1==y and y<=9)) and i==x):
+        elif(((j-1==y and y>0)or (j+1==y and y<=9)) and i==x):
             return True
         return False
    
-    def max(self):
-        maxv=-100
-        px=None
-        py=None
-        self.eval()
-        for i in range(0,10):
-            for j in range(0,10):
-                if (board[i][j]==0):
-                    x,y=self.get_bot_pos()
-                    valid=self.possible_move(i,j,x,y)
-                    if(valid==True):
-                        board[i][j]=22
-                        (m,min_i,min_j)=self.min()
-                        if(m>maxv):
-                            maxv=m
-                            px=i
-                            py=j
-                        board[i][j]=0
-        return(maxv,px,py)            
-    def min(self):
-        minv=100
-        qx=None
-        qy=None
-        self.eval()
-        for i in range(0,10):
-            for j in range(0,10):
-                if (board[i][j]==0):
-                    x,y=self.get_human_pos()
-                    valid=self.possible_move(x,y,i,j)
-                    if(valid==True):
-                        board[i][j]=11
-                        (m,max_i,max_j)=self.max()
-                        if(m<minv):
-                            minv=m
-                            qx=i
-                            qy=j
-                        board[i][j]=0
-        return(minv,qx,qy)            
+    # def max(self,depth):
+    #     maxv=-100
+    #     move=100
+    #     px=None
+    #     py=None
+    #     self.eval()
+    #     if(depth<3):
+    #         for i in range(0,10):
+    #             for j in range(0,10):
+    #                 if (board[i][j]==0):
+    #                     x,y=self.get_bot_pos()
+    #                     valid=self.possible_move(x,y,i,j)
+    #                     #check for possible move
+    #                     # after that check for heuristic move
+    #                     #Then allow the best move
+    #                     if(valid==True):
+    #                         hx,hy=self.get_human_pos()
+    #                         # i j is the next position he will get
+    #                         h=abs(i-hx)+abs(j-hy)
+    #                         if(move>h):
+    #                             board[i][j]=2
+    #                             (m,min_i,min_j)=self.min(depth+1)
+    #                             if(m>maxv+h):
+    #                                 maxv=m
+    #                                 px=i
+    #                                 py=j
+    #                             board[i][j]=0
+    #     return(maxv,px,py)            
+    # def min(self,depth):
+    #     minv=100
+    #     qx=None
+    #     qy=None
+    #     self.eval()
+    #     if(depth<3):
+    #         for i in range(0,10):
+    #             for j in range(0,10):
+    #                 if (board[i][j]==0):
+    #                     x,y=self.get_human_pos()
+    #                     valid=self.possible_move(x,y,i,j)
+                        
+    #                     if(valid==True):
+    #                         board[i][j]=1
+    #                         (m,max_i,max_j)=self.max(depth+1)
+    #                         if(m<minv):
+    #                             minv=m
+    #                             qx=i
+    #                             qy=j
+    #                         board[i][j]=0
+    #     return(minv,qx,qy)            
           
     def on_key_press(self , key , modifiers):
+        
         if self.state == "Game On":
             if key == arcade.key.ESCAPE:
                 exit(0)
@@ -351,9 +364,14 @@ class GameView(arcade.View):
                 self.turn=0
                 self.i = 11
                 self.j = 1
-                x,y = self.get_bot_pos()
-                score,x,y=self.max()
-                board[x][y]=22                            
+                bot_x,bot_y = self.get_bot_pos()
+                hx,hy=self.get_human_pos()
+                h=abs(bot_x-hx)+abs(bot_y-hy)
+                score,sp_x,sp_y=self.max(0)
+                if(sp_x!=None):
+                    board[bot_x][bot_y]=22
+                    board[sp_x][sp_y]=2
+          
                 self.score_count()    
                 self.eval()
         elif(self.state=='Game Over'):
