@@ -254,6 +254,7 @@ class GameView(arcade.View):
             return True
         return False
     def heuristic(self,x,y):
+        move=[]
         temp=100
         best_x=None
         best_y=None
@@ -282,8 +283,14 @@ class GameView(arcade.View):
                         #now check the movemnet towards center 
                         #get the best one
                         if(previous_x!=None):
-                            h2=abs(previous_x-5)+abs(previous_y-5)
+                            #check distance through center
                             h1=abs(i-5)+abs(j-5)
+                            h2=abs(previous_x-5)+abs(previous_y-5)
+                            if(h1<h2):
+                                h=h-1
+                            #check distance between opponents
+                            h1=abs(i-hx)+abs(j-hy)
+                            h2=abs(previous_x-hx)+abs(previous_y-hy)
                             if(h1<h2):
                                 h=h-2
                         if(temp>h):
@@ -300,26 +307,55 @@ class GameView(arcade.View):
             #here we will implement strategy about splash movements
             i,j=self.get_bot_pos()
             for k in range(0,10):
-                #if(board[i+k][j]==22)
-                if(i+k<10 and  board[i+k][j]==0 and board[i+k-1][j]==22):
-                    return (i+k-1),j
-                elif(i-k>0 and board[i-k][j]==0 and board[i-k+1][j]==22):
-                    return (i-k+1),j
-                elif(j+k<10 and board[i][j+k]==0 and board[i][j+k-1]==22):
-                    return i,(j+k-1)
-                elif(j-k>0 and board[i][j-k]==0 and board[i][j-k+1]==22):
-                    return i,(j-k+1)
+                if(i+k<=9 and  board[i+k][j]==0 ):
+                    if(board[i+k-1][j]==22):
+                        move.append(((i+k-1),j))
+                elif(i-k>=0 and board[i-k][j]==0):
+                    if(board[i-k+1][j]==22):
+                        move.append(((i-k+1),j))
+                elif(j+k<=9 and board[i][j+k]==0):
+                    if(board[i][j+k-1]==22):
+                        move.append( (i,(j+k-1)))
+                elif(j-k>=0 and board[i][j-k]==0):
+                    if(board[i][j-k+1]==22):
+                        move.append((i,(j-k+1)))
          #now design a strategy to if there is no 0
          #this is test case but still not completed
-            for k in range(0,10):
-                if(i+k<10 and  (board[i+k][j]==11 or i+k==10) ):
-                    return (i+k-1),j
-                elif(i-k>0 and (board[i-k][j]==11 or i-k==0)):
-                    return (i-k+1),j
-                elif(j+k<10 and (board[i][j+k]==11 or j+k==10)):
-                    return i,(j+k-1)
-                elif(j-k>0 and (board[i][j-k]==11 or j-k==0)):
-                    return i,(j-k+1)
+            if(len(move)>1):
+                for l in range(0,len(move),2):
+                    a,b=move[l]
+                    c,d=move[l+1]
+                    hx,hy=self.get_human_pos()
+                    h=abs(a-hx)+abs(b-hy)
+                    h2=abs(c-hx)+abs(d-hy)
+                    if(h<h2):
+                        best_x,best_y=a,b
+                    else:
+                        best_x,best_y=c,d
+            elif(len(move)==1):
+                best_x,best_y=move[0]
+            elif(len(move)==0):
+                for k in range(0,10):
+                    if(i+k<=9 and  (board[i+k][j]==11 or board[i+k][j]==1) ):
+                        return ((i+k-1),j)
+                    elif(i-k>=0 and (board[i-k][j]==11 or board[i-k][j]==1 )):
+                        return ((i-k+1),j)
+                    elif(j+k<=9 and (board[i][j+k]==11 or board[i][j+k]==1 )):
+                        return (i,(j+k-1))
+                    elif(j-k>=0 and (board[i][j-k]==11 or board[i][j-k]==1 )):
+                        return (i,(j-k+1))
+            else:
+                print("Now Edge")
+                k=9
+                if(i+k==9):
+                    return i+k,j
+                elif(i-k==0):
+                    return i+k,j
+                elif(j+k==9):
+                    return i,j+k
+                elif(j-k==0):
+                    return i,j-k
+            
         return (best_x,best_y)
         
     def on_key_press(self , key , modifiers):
