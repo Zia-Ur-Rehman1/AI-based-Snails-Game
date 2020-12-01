@@ -76,6 +76,10 @@ class GameView(arcade.View):
         super().__init__()
         self.time_taken = 0
         self.score=0
+        self.count=0
+        self.count2=0
+        self.pre_score=0
+        self.pre_score2=0
         self.score2=0
         self.turn=0
         self.temp_board=[]
@@ -152,15 +156,13 @@ class GameView(arcade.View):
                         arcade.draw_lrwh_rectangle_textured(100+(x*60),630-(60*y)+10,50,50,p2)
         elif(self.state=="Game Over"):
             background = arcade.load_texture("menu4.jpg")
-            if(self.score>49):
-        
+            if(self.score>self.score2):
                 arcade.draw_lrwh_rectangle_textured(0, 0,SCREEN_WIDTH, SCREEN_HEIGHT,background)
-
                 arcade.draw_text("Player 1 Win \nNice Played",SCREEN_WIDTH/2, SCREEN_HEIGHT-180,
                          arcade.color.SKY_BLUE, font_size=50, bold=True,anchor_x="center")
                 arcade.draw_text("Press Esc To Exit \n Enter To Reset",400, 500,
                          arcade.color.SKY_BLUE, font_size=50, bold=True,anchor_x="center")
-            elif(self.score2>49):
+            elif(self.score2>self.score):
                 arcade.draw_lrwh_rectangle_textured(0, 0,SCREEN_WIDTH, SCREEN_HEIGHT,background)
                 arcade.draw_text("Player 2 Win \nNice Played",SCREEN_WIDTH/2, SCREEN_HEIGHT-180,
                          arcade.color.SKY_BLUE, font_size=50, bold=True,anchor_x="center")
@@ -217,6 +219,8 @@ class GameView(arcade.View):
                 return x , y
     
     def score_count(self):
+        self.pre_score=self.score
+        self.pre_score2=self.score2
         self.score=0
         self.score2=0
         for x in range(0,10):
@@ -226,18 +230,27 @@ class GameView(arcade.View):
                 elif board[x][y]==22:
                     self.score2+=1
     def eval(self):
-        if(self.score>49):
-            self.state='Game Over'
-        elif(self.score2>49):
+        # if(self.pre_score>0 and self.pre_score==self.score):
+        #     self.count+=1
+        #     if(self.count>=15):
+        #         if(self.score>self.score2):
+        #             self.state='Game Over'
+        # if(self.pre_score2>0 and self.pre_score2==self.score2):
+        #     self.count2+=1
+        #     if(self.count2>=15):
+        #         if(self.score2>self.score):
+        #             self.state='Game Over'
+        
+        if(self.score>49 or self.score2>49):
             self.state='Game Over'
         elif(self.score==49 and self.score2==49):
             self.state='Game Over'
    
     def possible_move(self,x,y,i,j):
-       
+        
         if(((i-1==x and x>=0) or (i+1==x and x<=9)) and j==y):
             return True
-        elif(((j-1==y and y>0)or (j+1==y and y<=9)) and i==x):
+        elif(((j-1==y and y>=0)or (j+1==y and y<=9)) and i==x):
             return True
         return False
     def heuristic(self,x,y):
@@ -280,12 +293,22 @@ class GameView(arcade.View):
                             previous_x=i
                             previous_y=j
                         #when all sides have spashes or sprite even temp_x can b none
-        if(best_x==None and temp_x !=None):
+        if(best_x==None and temp_x!=None):
             best_x=temp_x
             best_y=temp_y
-        else:
+        elif(temp_x==None):
             #here we will implement strategy about splash movements
-            pass
+            i,j=self.get_bot_pos()
+            for k in range(0,10):
+                if(i<10 and j<10):
+                    if(i+k<10 and  board[i+k][j]==0):
+                        return (i+k-1),j
+                    elif(i-k>0 and board[i-k][j]==0):
+                        return (i-k+1),j
+                    elif(j+k<10 and board[i][j+k]==0):
+                        return i,(j+k-1)
+                    elif(j-k>0 and board[i][j-k]==0):
+                        return i,(j-k+1)
         return (best_x,best_y)
         
     def on_key_press(self , key , modifiers):
