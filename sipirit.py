@@ -300,15 +300,26 @@ class GameView(arcade.View):
             #here we will implement strategy about splash movements
             i,j=self.get_bot_pos()
             for k in range(0,10):
-                if(i<10 and j<10):
-                    if(i+k<10 and  board[i+k][j]==0):
-                        return (i+k-1),j
-                    elif(i-k>0 and board[i-k][j]==0):
-                        return (i-k+1),j
-                    elif(j+k<10 and board[i][j+k]==0):
-                        return i,(j+k-1)
-                    elif(j-k>0 and board[i][j-k]==0):
-                        return i,(j-k+1)
+                #if(board[i+k][j]==22)
+                if(i+k<10 and  board[i+k][j]==0 and board[i+k-1][j]==22):
+                    return (i+k-1),j
+                elif(i-k>0 and board[i-k][j]==0 and board[i-k+1][j]==22):
+                    return (i-k+1),j
+                elif(j+k<10 and board[i][j+k]==0 and board[i][j+k-1]==22):
+                    return i,(j+k-1)
+                elif(j-k>0 and board[i][j-k]==0 and board[i][j-k+1]==22):
+                    return i,(j-k+1)
+         #now design a strategy to if there is no 0
+         #this is test case but still not completed
+            for k in range(0,10):
+                if(i+k<10 and  (board[i+k][j]==11 or i+k==10) ):
+                    return (i+k-1),j
+                elif(i-k>0 and (board[i-k][j]==11 or i-k==0)):
+                    return (i-k+1),j
+                elif(j+k<10 and (board[i][j+k]==11 or j+k==10)):
+                    return i,(j+k-1)
+                elif(j-k>0 and (board[i][j-k]==11 or j-k==0)):
+                    return i,(j-k+1)
         return (best_x,best_y)
         
     def on_key_press(self , key , modifiers):
