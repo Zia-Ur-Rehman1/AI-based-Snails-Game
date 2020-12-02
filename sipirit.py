@@ -195,7 +195,7 @@ class GameView(arcade.View):
     def slip_up(self , x , y , i , j):
         for x in range(x , 0 , -1):
             if(x - 1 == 0):
-                return x-1 , y
+                return ((x-1) , y)
             if board[x-1][y] == 0 or board[x-1][y]==i or board[x-1][y]==j:
                 return x , y
     def slip_down(self , x , y , i ,j):
@@ -344,16 +344,15 @@ class GameView(arcade.View):
                         return (i,(j+k-1))
                     elif(j-k>=0 and (board[i][j-k]==11 or board[i][j-k]==1 )):
                         return (i,(j-k+1))
-            else:
                 print("Now Edge")
                 k=9
-                if(i+k==9):
+                if(i+k==9 and board[i+k-1][j]==22):
                     return i+k,j
-                elif(i-k==0):
+                elif(i-k==0 and board[i+k-1][j]==22):
                     return i+k,j
-                elif(j+k==9):
+                elif(j+k==9 and board[i][j+k-1]==22) :
                     return i,j+k
-                elif(j-k==0):
+                elif(j-k==0 and board[i][j-k+1]==22):
                     return i,j-k
             
         return (best_x,best_y)
@@ -379,7 +378,6 @@ class GameView(arcade.View):
                             board[x][y] = 1
                     
                     elif board[x-1][y] == 0:
-                        
                         board[x][y] = 11
                         board[x-1][y] = 1
                         
