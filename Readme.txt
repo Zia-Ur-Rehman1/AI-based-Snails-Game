@@ -1,5 +1,6 @@
-First of All X and Y Axis Start from lower left corner
+# 2D-Board Snails Game w/ Ali Raza Khan (ALIRAZA47)
 
+First of All X and Y Axis Start from lower left corner
 
 
 
